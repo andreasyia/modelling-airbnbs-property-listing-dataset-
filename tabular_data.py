@@ -1,16 +1,18 @@
+# from typing import DataFrame, Series, List, String, Tuple
 import ast
 import os
 import pandas as pd
 
-def remove_rows_with_missing_ratings(df):
+# def remove_rows_with_missing_ratings(dataframe: DataFrame) -> DataFrame:
+def remove_rows_with_missing_ratings(dataframe):
     """
     Remove rows with missing rating values from the DataFrame.
 
     Parameters:
-            df (pandas.DataFrame): The input DataFrame containing rating columns.
+            dataframe(pandas.DataFrame): The input DataFrame containing rating columns.
 
     Returns:
-            pandas.DataFrame: A DataFrame with rows containing missing rating values removed.
+            dataframe(pandas.DataFrame): A DataFrame with rows containing missing rating values removed.
     """
     columns_for_cleaning = ['Cleanliness_rating', 
                             'Accuracy_rating', 
@@ -18,10 +20,11 @@ def remove_rows_with_missing_ratings(df):
                             'Check-in_rating', 
                             'Value_rating', 
                             'Communication_rating']
-    df_cleaned = df.dropna(subset=columns_for_cleaning)
+    df_cleaned = dataframe.dropna(subset=columns_for_cleaning)
 
     return df_cleaned 
 
+# def preprocess_description(description: str) -> str:
 def preprocess_description(description):
     """
     This function takes a string representation of a list containing descriptions, it then processes and combines them and 
@@ -48,32 +51,34 @@ def preprocess_description(description):
     except (ValueError, SyntaxError):
         return None
 
-def combine_description_strings(df):
+# def combine_description_strings(dataframe: DataFrame) -> DataFrame:
+def combine_description_strings(dataframe):
     """
     This function applies the 'preprocess_description' function to the 'Description'
     column of the given DataFrame, removing rows with missing descriptions.
 
     Parameters:
-            df(pandas.DataFrame): The DataFrame containing the 'Description' column.
+            dataframe(pandas.DataFrame): The DataFrame containing the 'Description' column.
         
     Returns:
-            df(pandas.DataFrame): The modified DataFrame with cleaned and combined descriptions.
+            dataframe(pandas.DataFrame): The modified DataFrame with cleaned and combined descriptions.
     """
-    df['Description'] = df['Description'].apply(preprocess_description)
-    df = df.dropna(subset=['Description'])
+    dataframe['Description'] = dataframe['Description'].apply(preprocess_description)
+    dataframe = dataframe.dropna(subset=['Description'])
 
-    return df
+    return dataframe
 
-def set_default_feature_values(df):
+# def set_default_feature_values(dataframe: DataFrame) -> DataFrame:
+def set_default_feature_values(dataframe):
     """    
     This function takes a DataFrame and replaces empty values in the columns
     "guests", "beds", "bathrooms", and "bedrooms" with the number 1.
     
     Parameters:
-        df(pandas.DataFrame): The DataFrame containing the specified columns.
+        dataframe(pandas.DataFrame): The DataFrame containing the specified columns.
         
     Returns:
-        df(pandas.DataFrame): The modified DataFrame with replaced values.
+        dataframe(pandas.DataFrame): The modified DataFrame with replaced values.
     """
     columns_for_cleaning = ['guests', 
                             'beds', 
@@ -81,11 +86,13 @@ def set_default_feature_values(df):
                             'bedrooms' 
                             ]
     for column in columns_for_cleaning:
-        df[column].fillna(1, inplace=True)
+        dataframe[column].fillna(1, inplace=True)
 
-    return df
+    return dataframe
 
+# def clean_tabular_data(dataframe: DataFrame) -> DataFrame:
 def clean_tabular_data(dataframe):
+
     """    
     This function takes a raw DataFrame and applies sequential processing steps
     to clean and modify the data.
@@ -102,7 +109,9 @@ def clean_tabular_data(dataframe):
 
     return df_processed  
 
+# def load_airbnb(file_path: str, label: str) -> Tuple[DataFrame, Series]:
 def load_airbnb(file_path, label):
+
     """
     Load features and labels from the Airbnb tabular data.
 
