@@ -123,7 +123,10 @@ def load_airbnb(file_path, label):
         tuple: A tuple containing a pandas DataFrame of features and a pandas Series of labels.
     """
     data = pd.read_csv(file_path)
-    features = data.drop(columns=[label])
+    selected_columns =['guests', 'beds', 'bathrooms','Cleanliness_rating',
+                        'Accuracy_rating', 'Communication_rating', 'Location_rating',
+                        'Check-in_rating', 'Value_rating', 'amenities_count', 'bedrooms']
+    features = data[selected_columns]
     labels = data[label]
 
     return features, labels
