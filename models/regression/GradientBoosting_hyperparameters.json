@@ -1,6 +1,6 @@
 {
-    "criterion": "squared_error",
+    "criterion": "friedman_mse",
     "learning_rate": 0.1,
-    "loss": "huber",
+    "loss": "squared_error",
     "n_estimators": 100
 }

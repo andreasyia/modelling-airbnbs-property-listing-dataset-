@@ -9,10 +9,10 @@ def remove_rows_with_missing_ratings(dataframe):
     Remove rows with missing rating values from the DataFrame.
 
     Parameters:
-            dataframe(pandas.DataFrame): The input DataFrame containing rating columns.
+            dataframe (pandas.DataFrame): The input DataFrame containing rating columns.
 
     Returns:
-            dataframe(pandas.DataFrame): A DataFrame with rows containing missing rating values removed.
+            dataframe (pandas.DataFrame): A DataFrame with rows containing missing rating values removed.
     """
     columns_for_cleaning = ['Cleanliness_rating', 
                             'Accuracy_rating', 
@@ -31,10 +31,10 @@ def preprocess_description(description):
     removing empty strings and a prefix.
 
     Parameters:
-            description(str):  A string containing a list-like representation of descriptions.
+            description (str):  A string containing a list-like representation of descriptions.
 
     Returns:
-            combined_description(str): The combined and cleaned description.
+            combined_description (str): The combined and cleaned description.
     """
     try:
         # Convert string to a list
@@ -58,10 +58,10 @@ def combine_description_strings(dataframe):
     column of the given DataFrame, removing rows with missing descriptions.
 
     Parameters:
-            dataframe(pandas.DataFrame): The DataFrame containing the 'Description' column.
+            dataframe (pandas.DataFrame): The DataFrame containing the 'Description' column.
         
     Returns:
-            dataframe(pandas.DataFrame): The modified DataFrame with cleaned and combined descriptions.
+            dataframe (pandas.DataFrame): The modified DataFrame with cleaned and combined descriptions.
     """
     dataframe['Description'] = dataframe['Description'].apply(preprocess_description)
     dataframe = dataframe.dropna(subset=['Description'])
@@ -75,10 +75,10 @@ def set_default_feature_values(dataframe):
     "guests", "beds", "bathrooms", and "bedrooms" with the number 1.
     
     Parameters:
-        dataframe(pandas.DataFrame): The DataFrame containing the specified columns.
+        dataframe (pandas.DataFrame): The DataFrame containing the specified columns.
         
     Returns:
-        dataframe(pandas.DataFrame): The modified DataFrame with replaced values.
+        dataframe (pandas.DataFrame): The modified DataFrame with replaced values.
     """
     columns_for_cleaning = ['guests', 
                             'beds', 
@@ -98,10 +98,10 @@ def clean_tabular_data(dataframe):
     to clean and modify the data.
     
     Parameters:
-        dataframe(pandas.DataFrame): The raw DataFrame to be processed.
+        dataframe (pandas.DataFrame): The raw DataFrame to be processed.
         
     Returns:
-        df_proceessed(pandas.DataFrame): The processed DataFrame after all cleaning steps.
+        df_proceessed (pandas.DataFrame): The processed DataFrame after all cleaning steps.
     """
     df_cleaned_ratings = remove_rows_with_missing_ratings(dataframe)
     df_cleaned_descriptions = combine_description_strings(df_cleaned_ratings)
@@ -116,8 +116,8 @@ def load_airbnb(file_path, label):
     Load features and labels from the Airbnb tabular data.
 
     Parameters:
-        file_path(str): Path to the CSV file containing the tabular data.
-        label(str): Name of the column to be used as the label.
+        file_path (str): Path to the CSV file containing the tabular data.
+        label (str): Name of the column to be used as the label.
 
     Returns:
         tuple: A tuple containing a pandas DataFrame of features and a pandas Series of labels.
