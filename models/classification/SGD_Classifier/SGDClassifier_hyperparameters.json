@@ -1,5 +1,5 @@
 {
-    "learning_rate": "invscaling",
+    "alpha": 0.001,
     "loss": "squared_error",
     "max_iter": 1000,
     "penalty": "elasticnet"

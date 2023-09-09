@@ -1,0 +1,6 @@
+{
+    "criterion": "friedman_mse",
+    "learning_rate": 0.1,
+    "loss": "deviance",
+    "n_estimators": 100
+}

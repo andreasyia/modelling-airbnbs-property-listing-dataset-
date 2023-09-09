@@ -1,0 +1,6 @@
+{
+    "learning_rate": "invscaling",
+    "loss": "squared_error",
+    "max_iter": 2000,
+    "penalty": "elasticnet"
+}

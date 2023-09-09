@@ -92,7 +92,6 @@ def set_default_feature_values(dataframe):
 
 # def clean_tabular_data(dataframe: DataFrame) -> DataFrame:
 def clean_tabular_data(dataframe):
-
     """    
     This function takes a raw DataFrame and applies sequential processing steps
     to clean and modify the data.
@@ -111,7 +110,6 @@ def clean_tabular_data(dataframe):
 
 # def load_airbnb(file_path: str, label: str) -> Tuple[DataFrame, Series]:
 def load_airbnb(file_path, label):
-
     """
     Load features and labels from the Airbnb tabular data.
 
