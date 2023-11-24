@@ -11,6 +11,8 @@
 6. [Technologies Used](#section-5)
     - [Imported Modules 5.1](#subsection-5.1)
     - [Programming Languages 5.2](#subsection-5.2)
+7. [License](#section-6)
+
 
 
 ## Introduction
@@ -29,6 +31,7 @@ The `regression_model.py` script provided conducts evaluation and tuning of regr
 The `classification_model.py` script conducts evaluation and tuning of classification models using scikit-learn for predicting Airbnb property categories. It utilizes various models including `Logistic Regression`, `Gradient Boosting`, `Random Forest`, `Decision Tree` and `Stochastic Gradient Descent (SGD)` classifiers from scikit-learn. The script loads the Airbnb dataset, splits it into training and validation sets, and trains a Logistic Regression model. It computes performance metrics such as F1 Score, Precision, Recall, and Accuracy for both training and test sets. Ensure you have the required dependencies such as scikit-learn, NumPy, and joblib installed. Clone the repository and navigate to the script directory. Execute the script using Python 3.x. This script provides functions tailored for optimizing classification models. `tune_classification_model_hyperparameters` fine-tunes models using GridSearchCV, selecting the best based on given metrics. `save_model` preserves trained models, their parameters, and validation metrics separately. `evaluate_all_models` manages model tuning, evaluation, and stores the best ones. `find_best_model` systematically optimizes and identifies the best-performing model, its parameters, and metrics. These functions streamline classification model refinement for better accuracy and effectiveness.
 
 ### Deep Neural Network Model
+![image info](/pictures/nn.png)
 The `neural_network.py` script consists of classes and functions for a neural network-based regression model applied to Airbnb nightly price prediction. The `AirbnbNightlyPriceRegressionDataset` class defines a PyTorch Dataset for regression tasks, providing access to features and labels. The `NN` class constructs a feedforward neural network for inference, initialized with configurable parameters. Several key functions are implemented: `get_nn_config` retrieves neural network configurations from a YAML file, `calculate_accuracy` computes accuracy metrics, `calculate_rmse` determines RMSE values, and `calculate_r_squared` calculates R-squared scores. The `train` function orchestrates model training, evaluating performance with TensorBoardX logging, while save_model() saves pertinent model-related data. Additionally, `generate_nn_configs` creates diverse network configurations, and `find_best_nn` conducts K-fold cross-validation to determine the optimal model based on RMSE. Each function is extensively documented via docstrings, clarifying their roles, parameters, and return values for improved comprehension and streamlined utilization.
 
 ## Utilize the Framework for additional Airbnb Data analyses
@@ -54,5 +57,26 @@ The `neural_network.py` script consists of classes and functions for a neural ne
 ### Programming Languages
 - Python
 
+## License
+MIT License
 
-![image info](/pictures/nn.svg)
+Copyright (c) [2023] [Andreas Yianni]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
