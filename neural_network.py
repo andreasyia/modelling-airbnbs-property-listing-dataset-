@@ -15,6 +15,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import yaml
+from sklearn.model_selection import KFold
 
 # Set the random seed for reproducibility
 np.random.seed(1)
@@ -35,7 +36,6 @@ X_standardized = scaler.fit_transform(data_nn[0])  # Standardize the features (X
 # Create a tuple containing the standardized features and labels
 data_nn_standardized = (X_standardized, data_nn[1])
 
-
 class AirbnbNightlyPriceRegressionDataset(Dataset):
     """
     PyTorch Dataset for Airbnb nightly price regression.
@@ -50,46 +50,59 @@ class AirbnbNightlyPriceRegressionDataset(Dataset):
 
     Methods:
     --------
+    __init__(self, data_nn):
+        - Initialize the Airbnb nightly price regression dataset.
+
     __getitem__(self, idx):
         - Get a specific data sample by index.
-
-        Parameters:
-            - idx (int): Index of the data sample to retrieve.
-
-        Returns:
-            - torch.Tensor: A tuple containing features and labels for the specified index.
-
+        
     __len__(self):
         - Get the total number of data samples in the dataset.
-
-        Returns:
-            - int: The total number of data samples.
     """
 
 
-    def __init__(self, data_nn): ###data_nn
+    def __init__(self, data_nn): 
         """
         Initialize the Airbnb nightly price regression dataset.
 
         Parameters:
+        -----------
              - data_nn (tuple): A tuple containing data for features and labels as numpy arrays.
+               The first element of the tuple represents features, and the second element represents labels.
         """
         super().__init__()
         self.features = torch.from_numpy(np.array(data_nn[0])).float()
         self.labels = torch.from_numpy(np.array(data_nn[1])).float()
 
     def __getitem__(self, idx):
+        """
+        Get a specific data sample by index.
+
+        Parameters:
+        -----------
+            - idx (int): Index of the data sample to retrieve.
+
+        Returns:
+        --------
+            - tuple: A tuple containing features and labels for the specified index.
+        """
         features = self.features[idx]
         labels = self.labels[idx]
+
         return features, labels
     
     def __len__(self):
+        """
+        Get the total number of data samples in the dataset.
+
+        Returns:
+        --------
+            - int: The total number of data samples.
+        """
+
         return len(self.features)
     
-# dataset = AirbnbNightlyPriceRegressionDataset(data_nn) 
-
 dataset = AirbnbNightlyPriceRegressionDataset(data_nn_standardized)  # Use standardized data
-
 
 # Define the sizes for train and test sets
 total_size = len(dataset)
@@ -100,7 +113,6 @@ test_size = total_size - train_size   # Remaining for testing
 train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
 
 batch_size = 64
-
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 
@@ -109,7 +121,6 @@ features, labels = train_data
 print("Features:", len(features))
 print("Labels:", len(labels))
 
-# Define a function to read the YAML configuration file
 def get_nn_config(config_file):
     """
     Load a neural network configuration from a YAML file.
@@ -118,62 +129,49 @@ def get_nn_config(config_file):
     and returns it as a Python dictionary.
 
     Parameters:
+    -----------
         - config_file (str): The path to the YAML configuration file.
 
     Returns:
+    --------
         - dict: A dictionary containing the neural network configuration.
     """
     with open(config_file, "r") as yaml_file:
         config = yaml.safe_load(yaml_file)
+
     return config
 
-# class NN(torch.nn.Module):
-#     """
-#     Initialize a neural network model with a specified configuration. 
-    
-#     The constructor creates a feedforward neural network with a sequence of linear layers and ReLU 
-#     activation functions. The network architecture is determined by 'hidden_layer_width' and 'depth' 
-#     from the configuration.
-
-#     Attributes:
-#     -----------
-#     config (dict): A dictionary containing configuration parameters.
-#         - 'hidden_layer_width' (int): The width of each hidden layer.
-#         - 'depth' (int): The depth of the neural network.
-
-#     Methods:
-#     --------
-#     forward(features):
-#         - Perform a forward pass through the neural network.
-#     """
-
-
-#     def __init__(self, config):
-#         super().__init__()
-#         hidden_layer_width = config["hidden_layer_width"]
-#         depth = config["depth"]
-
-#         # Create a list of hidden layers
-#         hidden_layers = [torch.nn.Linear(11, hidden_layer_width), torch.nn.ReLU()]
-#         for _ in range(depth - 1):
-#             hidden_layers.extend([torch.nn.Linear(hidden_layer_width, hidden_layer_width), torch.nn.ReLU()])
-
-#         self.layers = torch.nn.Sequential(*hidden_layers, torch.nn.Linear(hidden_layer_width, 1))
-
-#     def forward(self, features):
-#         """
-#         Perform a forward pass through the neural network.
-
-#         Parameters:
-#             - x (torch.Tensor): Input data to be passed through the network.
-
-#         Returns:
-#             - torch.Tensor: The output of the neural network after the forward pass.
-#         """
-#         return self.layers(features)
-
 class NN(torch.nn.Module):
+    """
+    Neural Network Module for PyTorch.
+
+    This module constructs a feedforward neural network for inference.
+
+    Attributes:
+    -----------
+    model (nn.Sequential): The sequential model representing the neural network.
+
+    Methods:
+    --------
+    __init__(self, config):
+        - Initialize the neural network.
+
+    forward(features):
+        - Perform a forward pass through the neural network.
+    """
+
+
     def __init__(self, config):
+        """
+        Initialize a feedforward neural network.
+
+        Parameters:
+        -----------
+        - config (dict): A dictionary containing configuration parameters.
+          Required keys:
+            - "hidden_layer_width": Width of the hidden layers.
+            - "depth": Depth of the neural network.
+        """
         super(NN, self).__init__()  # Call the constructor of the parent class
         hidden_layer_width = config["hidden_layer_width"]
         depth = config["depth"]
@@ -198,6 +196,18 @@ class NN(torch.nn.Module):
         self.model = nn.Sequential(*layers)
 
     def forward(self, features):
+        """
+        Perform a forward pass through the neural network.
+
+        Parameters:
+        -----------
+        - features (torch.Tensor): Input tensor containing features.
+
+        Returns:
+        --------
+        - torch.Tensor: Output tensor after passing through the network.
+        """
+
         return self.model(features)
     
 def calculate_accuracy(predictions, labels):
@@ -208,19 +218,22 @@ def calculate_accuracy(predictions, labels):
     predictions to the nearest integer (0 or 1) and comparing them to the actual labels.
 
     Parameters:
+    -----------
         - predictions (torch.Tensor): Predicted values.
         - labels (torch.Tensor): Actual labels.
 
     Returns:
+    --------
         - float: Accuracy as a percentage (0.0 to 1.0).
     """
     predictions = predictions.round()  # Round the predictions to the nearest integer (0 or 1)
     correct = (predictions == labels).sum().item()
     total = labels.size(0)
     accuracy = correct / total
+
     return accuracy
 
-def calculate_rmse(predictions, labels):
+def calculate_rmse(predictions,labels):
     """
     Calculate the Root Mean Squared Error (RMSE) between predictions and labels.
 
@@ -228,14 +241,17 @@ def calculate_rmse(predictions, labels):
     and actual values. Lower RMSE values indicate better model performance.
 
     Parameters:
+    -----------
         - predictions (torch.Tensor): Predicted values.
         - labels (torch.Tensor): Actual labels.
 
     Returns:
+    --------
         - float: The RMSE value.
     """
-    mse = F.mse_loss(predictions, labels)
+    mse = F.mse_loss(predictions,labels)
     rmse = math.sqrt(mse.item())
+
     return rmse
 
 def calculate_r_squared(predictions, labels):
@@ -246,16 +262,16 @@ def calculate_r_squared(predictions, labels):
     variance in the dependent variable that is predictable from the independent variable.
     
     Parameters:
+    -----------
         - predictions (torch.Tensor): Predicted values.
         - labels (torch.Tensor): Actual labels.
 
     Returns:
+    --------
         - float: The R-squared value, typically in the range [0, 1].
     """
-    # Check for NaN values in predictions and labels
-    # if torch.isnan(predictions).any() or torch.isnan(labels).any():
-    #     raise ValueError("Predictions or labels contain NaN values. Check and handle missing data.")
     r2 = r2_score(labels.detach().numpy(), predictions.detach().numpy())
+
     return r2
 
 def train(model, train_loader, test_loader, config, epochs):
@@ -267,6 +283,7 @@ def train(model, train_loader, test_loader, config, epochs):
     TensorBoardX.
 
     Parameters:
+    -----------
         - model (torch.nn.Module): The neural network model to train and evaluate.
         - train_loader (DataLoader): DataLoader for the training dataset.
         - test_loader (DataLoader): DataLoader for the validation dataset.
@@ -274,7 +291,11 @@ def train(model, train_loader, test_loader, config, epochs):
         - epochs (int): The number of training epochs.
 
     Returns:
-        - None
+    --------
+        - tuple: A tuple containing:
+        - torch.nn.Module: The trained neural network model.
+        - list of dict: Performance metrics for training and validation.
+        - dict: Hyperparameters used for training.
     """
     learning_rate = config["learning_rate"]
     optimiser = torch.optim.SGD(model.parameters(), lr=learning_rate)
@@ -299,7 +320,7 @@ def train(model, train_loader, test_loader, config, epochs):
 
             # Calculate accuracy, RMSE and R^2
             accuracy = calculate_accuracy(prediction, labels)
-            rmse = calculate_rmse(prediction, labels)
+            rmse = calculate_rmse(prediction,labels)
             r_squared = calculate_r_squared(prediction, labels)
 
             # Log training loss, accuracy, RMSE and R^2
@@ -386,7 +407,6 @@ def train(model, train_loader, test_loader, config, epochs):
         }
     ] 
 
-
     hyperparameters = {
         'learning_rate': learning_rate,
         'hidden_layer_width': config["hidden_layer_width"],
@@ -399,20 +419,23 @@ def train(model, train_loader, test_loader, config, epochs):
 
 def save_model(model, hyperparams, metrics, folder):
     """
-    Save the best  model, hyperparameters, and performance metrics to files.
+    Save the trained model, hyperparameters, and performance metrics to files.
+
+    This function saves the trained neural network model, its associated hyperparameters,
+    and the performance metrics evaluated on the validation data into separate files.
 
     Parameters:
+    -----------
         - model: The best trained regression model.
         - hyperparams (dict): The best hyperparameters.
         - metrics (dict): Performance metrics on the validation data.
         - folder (str): The folder where the files will be saved.
 
     Returns:
+    --------
         None
     """
-    # Get the model class name
-    model_name = model.__class__.__name__
-
+    # Determine if the model is a PyTorch model
     is_torch_model = bool()
 
     try:
@@ -426,7 +449,9 @@ def save_model(model, hyperparams, metrics, folder):
         current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
         model_folder = os.path.join(folder, current_datetime)
         os.makedirs(model_folder, exist_ok=True)
+
         # Save the PyTorch model as 'model.pt'
+        model_name = model.__class__.__name__
         model_path = os.path.join(model_folder, f"{model_name}_model.pt")
         torch.save(model.state_dict(), model_path)
 
@@ -441,6 +466,7 @@ def save_model(model, hyperparams, metrics, folder):
             json.dump(metrics, f, indent=4)
     else:
         # Save the model to a joblib file
+        model_name = model.__class__.__name__
         model_path = os.path.join(folder, f"{model_name}_model.joblib")
         joblib.dump(model, model_path)
     
@@ -463,6 +489,7 @@ def generate_nn_configs():
     layer widths, and depths.
 
     Returns:
+    --------
         - list: A list of dictionaries, where each dictionary represents a unique neural
         network configuration.
     """
@@ -481,22 +508,26 @@ def generate_nn_configs():
                     "depth": depth
                 }
                 configs.append(config)
+
     return configs
 
-def find_best_nn(train_loader, test_loader, epochs):
+def find_best_nn(train_loader, test_loader, epochs, n_splits=5):
     """
-    Find the best neural network model configuration among multiple configurations.
+    Find the best neural network model configuration among multiple configurations using K-fold cross-validation.
 
     This function trains multiple neural network models with different configurations,
-    evaluates their performance, and returns the best-performing model along with its
-    metrics and hyperparameters.
+    evaluates their performance using K-fold cross-validation, and returns the best-performing model
+    along with its metrics and hyperparameters.
 
     Parameters:
+    -----------
         - train_loader (DataLoader): DataLoader for the training dataset.
-        - test_loader (DataLoader): DataLoader for the validation dataset.
+        - test_loader (DataLoader): DataLoader for the test/validation dataset.
         - epochs (int): The number of training epochs.
+        - n_splits (int): The number of K-fold splits (default is 5).
 
     Returns:
+    --------
         - tuple: A tuple containing the best-performing model, its associated performance metrics,
         and the hyperparameters used to train the model.
     """
@@ -509,33 +540,45 @@ def find_best_nn(train_loader, test_loader, epochs):
     hyperparameters_list = []
     performance_metrics_list = []
 
+    # Create K-fold cross-validation iterator
+    kf = KFold(n_splits=n_splits, shuffle=True, random_state=1)
+
     for config in generate_nn_configs():
         print(config)
-        model = NN(config)
-        model, performance_metrics, hyperparameters = train(model, train_loader, test_loader, config, epochs)
+        val_rmse_sum = 0
 
-        val_dict = performance_metrics[1]
-        val_rmse = val_dict['Val RMSE']
+        for train_index, test_index in kf.split(train_loader.dataset):
+            train_dataset, test_dataset = torch.utils.data.Subset(train_loader.dataset, train_index), torch.utils.data.Subset(train_loader.dataset, test_index)
 
-        if val_rmse < best_val_rmse:
-            best_val_rmse = val_rmse
+            model = NN(config)
+            model, performance_metrics, hyperparameters = train(model, train_loader, test_loader, config, epochs)
+
+            val_dict = performance_metrics[1]
+            val_rmse = val_dict['Val RMSE']
+            val_rmse_sum += val_rmse
+
+        # Calculate the average RMSE over K folds
+        avg_val_rmse = val_rmse_sum / n_splits
+
+        if avg_val_rmse < best_val_rmse:
+            best_val_rmse = avg_val_rmse
             best_model = model
-            best_hyperparameters = hyperparameters
             best_performance_metrics = performance_metrics
+            best_hyperparameters = hyperparameters
 
         models_list.append(best_model)
-        hyperparameters_list.append(best_hyperparameters)
         performance_metrics_list.append(best_performance_metrics)
+        hyperparameters_list.append(best_hyperparameters)
 
-    save_model(best_model, best_performance_metrics, best_hyperparameters, 'models/neural_networks/')
+    save_model(best_model, best_hyperparameters, best_performance_metrics, 'models/neural_networks/regression/kfold')
 
     return best_model, best_performance_metrics, best_hyperparameters
-    
+
 if __name__ == "__main__":
 
-    # config = get_nn_config("nn_config.yaml")
-    # model = NN(config)
-    # train(model, train_loader, test_loader, config, epochs=150)
+    config = get_nn_config("nn_config.yaml")
+    model = NN(config)
+    train(model, train_loader, test_loader, config, epochs=150)
     best_model, best_performance_metrics, best_hyperparameters = find_best_nn(train_loader, test_loader, epochs=150)
 
     print("Best model:", best_model)

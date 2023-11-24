@@ -1,0 +1,4 @@
+optimiser: "SGD"
+learning_rate: 0.00001
+hidden_layer_width: 120
+depth: 2

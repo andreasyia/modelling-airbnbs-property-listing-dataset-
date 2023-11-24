@@ -1,9 +1,7 @@
-# from typing import DataFrame, Series, List, String, Tuple
 import ast
 import os
 import pandas as pd
 
-# def remove_rows_with_missing_ratings(dataframe: DataFrame) -> DataFrame:
 def remove_rows_with_missing_ratings(dataframe):
     """
     Remove rows with missing rating values from the DataFrame.
@@ -24,7 +22,6 @@ def remove_rows_with_missing_ratings(dataframe):
 
     return df_cleaned 
 
-# def preprocess_description(description: str) -> str:
 def preprocess_description(description):
     """
     This function takes a string representation of a list containing descriptions, it then processes and combines them and 
@@ -49,9 +46,9 @@ def preprocess_description(description):
         return combined_description
     
     except (ValueError, SyntaxError):
+
         return None
 
-# def combine_description_strings(dataframe: DataFrame) -> DataFrame:
 def combine_description_strings(dataframe):
     """
     This function applies the 'preprocess_description' function to the 'Description'
@@ -68,7 +65,6 @@ def combine_description_strings(dataframe):
 
     return dataframe
 
-# def set_default_feature_values(dataframe: DataFrame) -> DataFrame:
 def set_default_feature_values(dataframe):
     """    
     This function takes a DataFrame and replaces empty values in the columns
@@ -90,7 +86,6 @@ def set_default_feature_values(dataframe):
 
     return dataframe
 
-# def clean_tabular_data(dataframe: DataFrame) -> DataFrame:
 def clean_tabular_data(dataframe):
     """    
     This function takes a raw DataFrame and applies sequential processing steps
@@ -108,7 +103,6 @@ def clean_tabular_data(dataframe):
 
     return df_processed  
 
-# def load_airbnb(file_path: str, label: str) -> Tuple[DataFrame, Series]:
 def load_airbnb(file_path, label):
     """
     Load features and labels from the Airbnb tabular data.
@@ -139,10 +133,13 @@ if __name__ == "__main__":
         df = pd.read_csv(file)
 
     processed_data = clean_tabular_data(df)
+
     # Get the directory of the raw CSV file
     directory = os.path.dirname(csv_file_path)
+
     # Path to save the processed data CSV file
     processed_csv_file_path = os.path.join(directory, 'clean_tabular_data.csv')
+
     # Save the processed data as CSV
     processed_data.to_csv(processed_csv_file_path, index=False)
     print("Data processing and saving complete")
