@@ -1,6 +1,8 @@
+from sklearn.preprocessing import LabelEncoder
 import ast
 import os
 import pandas as pd
+
 
 def remove_rows_with_missing_ratings(dataframe):
     """
@@ -117,7 +119,7 @@ def load_airbnb(file_path, label):
     data = pd.read_csv(file_path)
     selected_columns =['guests', 'beds', 'bathrooms','Cleanliness_rating',
                         'Accuracy_rating', 'Communication_rating', 'Location_rating',
-                        'Check-in_rating', 'Value_rating', 'amenities_count', 'bedrooms']
+                        'Check-in_rating', 'Value_rating', 'amenities_count', 'Category']
     features = data[selected_columns]
     labels = data[label]
 
@@ -133,6 +135,12 @@ if __name__ == "__main__":
         df = pd.read_csv(file)
 
     processed_data = clean_tabular_data(df)
+
+    # Handle unexpected values in the 'Category' column using LabelEncoder
+    category_column = processed_data['Category']
+    label_encoder = LabelEncoder()
+    processed_data['Category'] = label_encoder.fit_transform(category_column)
+
 
     # Get the directory of the raw CSV file
     directory = os.path.dirname(csv_file_path)

@@ -23,7 +23,9 @@ np.random.seed(1)
 # Define the path to the data file
 file_path = '/Users/andreasyianni/Desktop/Educational Training /Data Scientist Training/AiCore Training/Projects/Modelling-Airbnbs-Property-Listing-Dataset/airbnb-property-listings/tabular_data/clean_tabular_data.csv'
 
-data_nn = load_airbnb(file_path, "Price_Night") # Load the dataset
+data_nn = load_airbnb(file_path, "bedrooms") # Load the dataset
+# data_nn = load_airbnb(file_path, "Price_Night") # Load the dataset
+
 
 df = pd.DataFrame(data_nn[0])  
 missing_values = df.isnull().sum()
@@ -570,7 +572,7 @@ def find_best_nn(train_loader, test_loader, epochs, n_splits=5):
         performance_metrics_list.append(best_performance_metrics)
         hyperparameters_list.append(best_hyperparameters)
 
-    save_model(best_model, best_hyperparameters, best_performance_metrics, 'models/neural_networks/regression/kfold')
+    save_model(best_model, best_hyperparameters, best_performance_metrics, 'models/neural_networks/regression')
 
     return best_model, best_performance_metrics, best_hyperparameters
 

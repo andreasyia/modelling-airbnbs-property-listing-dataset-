@@ -1,0 +1,12 @@
+[
+    {
+        "Train Accuracy": 0.0,
+        "Train RMSE": 86.11457325309404,
+        "Train r_squared": -1.9489625373537889
+    },
+    {
+        "Val Accuracy": 0.0,
+        "Val RMSE": 114.94576808906777,
+        "Val r_squared": 0.030784684041265775
+    }
+]
